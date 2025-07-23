@@ -1,7 +1,0 @@
-<h1>Cuidadores</h1>
-<ul>
-  {% for cuidador in cuidadores %}
-    <li>{{ cuidador.nome }} - {{ cuidador.email }}</li>
-  {% endfor %}
-</ul>
-<a href="{% url 'novo_cuidador' %}">Cadastrar novo cuidador</a>
