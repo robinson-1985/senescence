@@ -1,0 +1,12 @@
+{% extends 'inscrever/base.html' %}
+{% block title %}Detalhes do Cuidador{% endblock %}
+
+{% block content %}
+  <h2>{{ cuidador.nome }}</h2>
+  <p><strong>Email:</strong> {{ cuidador.email }}</p>
+  <p><strong>Telefone:</strong> {{ cuidador.telefone }}</p>
+  <p><strong>Experiência:</strong> {{ cuidador.experiencia }}</p>
+  <p><strong>Cidade:</strong> {{ cuidador.cidade }} - {{ cuidador.estado }}</p>
+  <p><strong>Disponível:</strong> {{ cuidador.disponibilidade|yesno:"Sim,Não" }}</p>
+  <a href="{% url 'lista_cuidadores' %}" class="btn btn-secondary">Voltar</a>
+{% endblock %}
