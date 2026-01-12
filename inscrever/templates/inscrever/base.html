@@ -1,39 +1,67 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <title>{% block title %}Cuidadores{% endblock %}</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  {% block extra_head %}{% endblock %}
-</head>
-<body class="bg-light">
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary px-4">
-    <a class="navbar-brand" href="{% url 'lista_cuidadores' %}">Cuidadores</a>
-  </nav>
+  <head>
+    <meta charset="UTF-8" />
 
-  <main class="container mt-4">
+    <title>{% block title %} Cuidadores {% endblock %}</title>
 
-    {% if messages %}
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
-        </div>
-      {% endfor %}
-    {% endif %}
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
 
-    {% if user.is_authenticated and request.resolver_match.url_name == 'lista_cuidadores' %}
-      <div class="mb-3 text-end">
-        <a href="{% url 'cuidadores_novo' %}" class="btn btn-success">
-          + Novo Cuidador
+    <link rel="stylesheet" href="{% static 'inscrever/css/style.css' %}" />
+
+    {% block extra_head %}{% endblock %}
+  </head>
+
+    <body class="bg-light d-flex flex-column min-vh-100">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-primary px-4">
+        <a class="navbar-brand fw-bold" href="{% url 'cuidador_list' %}">
+          Cuidadores
         </a>
-      </div>
-    {% endif %}
+      </nav>
 
-    {% block content %}
-    {% endblock %}
-  </main>
+    <main class="container my-4 flex-fill">
+        {% if messages %} {% for message in messages %}
+        <div
+          class="alert alert-{{ message.tags }} alert-dismissible fade show"
+          role="alert"
+        >
+          {{ message }}
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Fechar"
+          ></button>
+        </div>
+        {% endfor %} 
+    {% endif %} 
+        
+    {% if user.is_authenticated and request.resolver_match.url_name == 'cuidador_list' %}
+        <div class="mb-3 text-end">
+          <a href="{% url 'novo_cuidador' %}" class="btn btn-success">
+            + Novo Cuidador
+          </a>
+        </div>
+        {% endif %} 
+        
+        {% block content %} 
+        {% endblock %}
 
-  <script src="{% static 'inscrever/js/script.js' %}"></script>
-</body>
+    </main>
+
+    <footer class="bg-white border-top text-center py-3 text-muted small">
+      © {{ now|date:"Y" }} Senescence — Plataforma de Cuidadores
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="{% static 'inscrever/js/script.js' %}"></script>
+
+    {% block extra_js %}{% endblock %}
+  </body>
 </html>

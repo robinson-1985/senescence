@@ -1,12 +1,13 @@
 {% extends 'inscrever/base.html' %}
+
 {% block title %}Novo Cuidador{% endblock %}
 
 {% block content %}
-  <h2>Cadastrar Cuidador</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Salvar</button>
-    <a href="{% url 'lista_cuidadores' %}" class="btn btn-secondary">Voltar</a>
-  </form>
+    <h2>Cadastrar Cuidador</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Salvar</button>
+      <a href="{% url 'cuidador_list' %}" class="btn btn-secondary">Voltar</a>
+    </form>
 {% endblock %}
