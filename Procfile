@@ -1,1 +1,1 @@
-web: gunicorn principal.wsgi
+web: gunicorn senescence.wsgi
