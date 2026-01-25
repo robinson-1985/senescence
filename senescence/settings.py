@@ -17,9 +17,20 @@ import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Segurança e produção
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-4!80k4mkf5+cpa_!s27@8%xsl!-#xal8_$50xfj9_pxw*kd@o6')
+SECRET_KEY = os.environ.get("SECRET_KEY")
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY não definida")
+
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = ['*']
+
+ALLOWED_HOSTS = ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+
+CSRF_TRUSTED_ORIGINS = (
+    os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
+    if os.environ.get("CSRF_TRUSTED_ORIGINS")
+    else []
+)
+
 
 # Aplicações
 INSTALLED_APPS = [
@@ -67,10 +78,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'senescence.wsgi.application'
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+        ssl_require=os.environ.get("DB_SSL", "False") == "True",
+    )
 }
 
 AUTH_PASSWORD_VALIDATORS = [
