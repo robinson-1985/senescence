@@ -1,0 +1,26 @@
+<h1>Profissionais - {{ city }}</h1>
+
+<form method="get">
+  <label>Cidade:</label>
+  <input name="city" value="{{ city }}" />
+  <label>
+    <input type="checkbox" name="caregiver" value="1" {% if caregiver == "1" %}checked{% endif %}>
+    Somente cuidadores
+  </label>
+  <button type="submit">Filtrar</button>
+</form>
+
+<hr>
+
+{% if profiles %}
+  <ul>
+    {% for p in profiles %}
+      <li>
+        <a href="{% url 'public_professional_detail' p.slug %}">{{ p.display_name }}</a>
+        — {{ p.city }} — {% if p.is_caregiver %}Cuidador{% else %}Profissional{% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>Nenhum profissional publicado ainda.</p>
+{% endif %}

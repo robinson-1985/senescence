@@ -1,0 +1,13 @@
+<h1>Meu Perfil</h1>
+<p>Após salvar, o perfil fica em revisão (você aprova no admin marcando "published").</p>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Salvar</button>
+</form>
+
+<hr>
+{% if profile %}
+  <p><strong>Status público:</strong> {{ profile.published|yesno:"Publicado,Não publicado" }}</p>
+{% endif %}

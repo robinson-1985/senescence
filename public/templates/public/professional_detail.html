@@ -1,0 +1,17 @@
+<h1>{{ profile.display_name }}</h1>
+<p><strong>Cidade:</strong> {{ profile.city }}</p>
+<p><strong>Região:</strong> {{ profile.region }}</p>
+<p><strong>Serviços:</strong> {{ profile.services }}</p>
+<p><strong>Bio:</strong> {{ profile.bio|linebreaks }}</p>
+
+<p>
+  <a href="{{ profile.whatsapp_link }}" target="_blank">Chamar no WhatsApp</a>
+</p>
+
+<hr>
+<h2>Enviar mensagem (formulário)</h2>
+<form method="post" action="{% url 'public_contact_professional' profile.slug %}">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Enviar</button>
+</form>
