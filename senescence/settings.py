@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     
     'inscrever',
     'principal',
+    'profiles',
+    'public',
 ]
 
 # Middlewares
