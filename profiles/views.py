@@ -12,7 +12,7 @@ def my_profile(request):
         user=request.user,
         defaults={
             "display_name": request.user.get_full_name() or request.user.username,
-            "phone_whatsapp": "55"
+            "phone_whatsapp": "",
         }
     )
     
@@ -29,7 +29,7 @@ def my_profile(request):
                 _("Perfil atualizado com sucesso! Aguarde aprovação da equipe.")
             )
             
-            return redirect("profiles_my_profile")
+            return redirect("profiles:my_profile")
         else:
             messages.error(
                 request,

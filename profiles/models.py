@@ -7,12 +7,15 @@ from urllib.parse import quote
 
 
 class ProfessionalProfile(models.Model):
+    """Perfil profissional de cuidadores e prestadores de serviços."""
+    
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="professional_profile",
         verbose_name=_("Usuário")
     )
+    
     display_name = models.CharField(
         _("Nome de exibição"),
         max_length=120
@@ -23,6 +26,7 @@ class ProfessionalProfile(models.Model):
         blank=True,
         db_index=True
     )
+    
     city = models.CharField(
         _("Cidade"),
         max_length=80,
@@ -34,6 +38,7 @@ class ProfessionalProfile(models.Model):
         default="Araraquara e região",
         blank=True
     )
+    
     is_caregiver = models.BooleanField(
         _("É cuidador(a)?"),
         default=True
@@ -49,6 +54,7 @@ class ProfessionalProfile(models.Model):
         blank=True,
         help_text=_("Ex: banho, companhia, medicação, curativos")
     )
+    
     phone_validator = RegexValidator(
         regex=r'^\d{10,11}$',
         message=_("Telefone deve conter 10 ou 11 dígitos (DDD + número)")
@@ -59,6 +65,7 @@ class ProfessionalProfile(models.Model):
         validators=[phone_validator],
         help_text=_("Somente números com DDD (ex: 16999998888)")
     )
+    
     available = models.BooleanField(
         _("Disponível"),
         default=True,
@@ -69,6 +76,7 @@ class ProfessionalProfile(models.Model):
         default=False,
         help_text=_("Marque para aparecer publicamente")
     )
+    
     created_at = models.DateTimeField(
         _("Criado em"),
         auto_now_add=True
@@ -106,12 +114,29 @@ class ProfessionalProfile(models.Model):
         
         return slug
     
-    @property
-    def whatsapp_link(self):
-       
+    def formatted_phone(self):
+        """Retorna o telefone formatado para exibição."""
         digits = "".join(filter(str.isdigit, self.phone_whatsapp))
         
-        # Adiciona código do Brasil se necessário
+        if len(digits) == 11:
+            ddd = digits[:2]
+            first = digits[2:7]
+            last = digits[7:]
+            return f"+55 ({ddd}) {first}-{last}"
+        
+        if len(digits) == 10:
+            ddd = digits[:2]
+            first = digits[2:6]
+            last = digits[6:]
+            return f"+55 ({ddd}) {first}-{last}"
+        
+        return f"+55 {digits}"
+    
+    @property
+    def whatsapp_link(self):
+        """Gera link do WhatsApp para abrir conversa."""
+        digits = "".join(filter(str.isdigit, self.phone_whatsapp))
+        
         if not digits.startswith("55"):
             digits = f"55{digits}"
         
@@ -122,4 +147,4 @@ class ProfessionalProfile(models.Model):
     
     def get_absolute_url(self):
         from django.urls import reverse
-        return reverse("professional_profile_detail", kwargs={"slug": self.slug})
+        return reverse("public:professional_detail", kwargs={"slug": self.slug})

@@ -1,3 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+
 <h1>Profissionais - {{ city }}</h1>
 
 <form method="get">
@@ -24,3 +27,5 @@
 {% else %}
   <p>Nenhum profissional publicado ainda.</p>
 {% endif %}
+
+{% endblock %}

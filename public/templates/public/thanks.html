@@ -1,4 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+
 <h1>Mensagem enviada ✅</h1>
 <p>Sua mensagem foi registrada. Você também pode chamar no WhatsApp:</p>
 <p><a href="{{ profile.whatsapp_link }}" target="_blank">WhatsApp do profissional</a></p>
 <p><a href="{% url 'public_professionals_list' %}">Voltar para a lista</a></p>
+
+{% endblock %}

@@ -17,6 +17,10 @@ class ProfessionalProfileForm(forms.ModelForm):
             "services",
             "available",
         ]
+        widgets = {
+            "bio": forms.Textarea(attrs={"rows": 5}),
+            "phone_whatsapp": forms.TextInput(attrs={"placeholder": "Ex: 16999998888 (sem +55)"}),
+        }
         
         widgets = {
             "display_name": forms.TextInput(attrs={
