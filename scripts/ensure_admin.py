@@ -1,6 +1,4 @@
 import os
-import sys
-
 import django
 
 
@@ -9,33 +7,22 @@ def main():
     django.setup()
 
     from django.contrib.auth import get_user_model
-
-    username = os.getenv("ADMIN_USERNAME")
-    password = os.getenv("ADMIN_PASSWORD")
-    email = os.getenv("ADMIN_EMAIL", "")
-
-    if not username or not password:
-        print("ADMIN_USERNAME/ADMIN_PASSWORD not set; skipping admin ensure.")
-        return 0
-
+    
     User = get_user_model()
 
-    user, created = User.objects.get_or_create(
-        username=username,
-        defaults={"email": email},
-    )
+    username = os.getenv("ADMIN_USERNAME", "admin")
+    email = os.getenv("ADMIN_EMAIL", "admin@example.com")
+    password = os.getenv("ADMIN_PASSWORD")
 
-    user.is_staff = True
-    user.is_superuser = True
-    if email:
+    if not password:
+        raise SystemExit("ADMIN_PASSWORD não definida nas variáveis do Railway.")
+
+        user, created = User.objects.get_or_create(username=username, defaults={"email": email})
+
         user.email = email
+        user.is_staff = True
+        user.is_superuser = True
+        user.set_password(password)
+        user.save()
 
-    user.set_password(password)
-    user.save()
-
-    print(f"Admin ensured: {username} (created={created})")
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+        print(f"[OK] Admin garantido: {username} (created={created})")
