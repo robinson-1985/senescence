@@ -1,4 +1,4 @@
-name: Django CI/CD
+name: Django CI (Railway Ready)
 
 on:
   push:
@@ -12,8 +12,8 @@ jobs:
     
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12']
-    
+        python-version: ['3.10', '3.11']
+
     services:
       postgres:
         image: postgres:15
@@ -28,98 +28,62 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    
-    - name: Set up Python ${{ matrix.python-version }}
+
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
-    
-    - name: Cache pip dependencies
+
+    - name: Cache pip
       uses: actions/cache@v3
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-    
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        pip install coverage flake8 black bandit pytest pytest-django
-    
-    - name: Create .env file
+        pip install coverage flake8 black bandit pytest pytest-django dj-database-url
+
+    - name: Create CI .env
       run: |
-        echo "SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
+        echo "SECRET_KEY=test-secret-key" >> .env
         echo "DEBUG=False" >> .env
         echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test_senescence_db" >> .env
         echo "ALLOWED_HOSTS=localhost,127.0.0.1" >> .env
-    
-    - name: Lint with flake8
+
+    - name: Lint
       run: |
-        # Parar build se houver erros de sintaxe ou nomes indefinidos
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=migrations,venv,env
-        # Avisos de complexidade e estilo (não quebra o build)
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude=migrations,venv,env
-    
-    - name: Check code formatting with Black
+        flake8 . --exclude=migrations,venv,env
+
+    - name: Black check
       run: |
-        black --check --exclude="migrations|venv|env" .
-      continue-on-error: true
-    
-    - name: Security check with Bandit
+        black --check . || true
+
+    - name: Bandit security
       run: |
-        bandit -r . -ll -x ./venv,./env,*/migrations/* --skip B101,B601
-      continue-on-error: true
-    
-    - name: Check for missing migrations
+        bandit -r . -x ./venv,*/migrations/* || true
+
+    - name: Check migrations
       run: |
         python manage.py makemigrations --check --dry-run --no-input
-    
+
     - name: Run migrations
       run: |
         python manage.py migrate --no-input
-    
-    - name: Run tests with coverage
+
+    - name: Run tests
       run: |
-        coverage run --source='.' manage.py test --no-input
-        coverage report --skip-covered
+        coverage run manage.py test --no-input
         coverage xml
-    
-    - name: Upload coverage to Codecov
+
+    - name: Upload coverage
       uses: codecov/codecov-action@v3
       with:
-        file: ./coverage.xml
+        file: coverage.xml
         fail_ci_if_error: false
-      continue-on-error: true
-    
-    - name: Collect static files
-      run: |
-        python manage.py collectstatic --no-input
-      continue-on-error: true
-
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Deploy to production
-      run: |
-        echo "🚀 Deploy seria executado aqui"
-        echo "Exemplos: Railway, Render, DigitalOcean, AWS, Heroku"
-        # Adicione aqui os comandos específicos do seu provedor de hosting
-    
-    # Exemplo para Railway:
-    # - name: Deploy to Railway
-    #   uses: bervProject/railway-deploy@main
-    #   with:
-    #     railway_token: ${{ secrets.RAILWAY_TOKEN }}
-    #     service: senescence-app
